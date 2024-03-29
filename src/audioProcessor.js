@@ -1,6 +1,7 @@
 const ffmpeg = require("fluent-ffmpeg");
 const { PassThrough } = require("stream");
 const transcriber = require("./transcriber");
+const nms = require("./mediaServer");
 
 function processAudioStream(streamPath) {
   const inputPath = `rtmp://localhost:1935${streamPath}`;
@@ -30,6 +31,9 @@ function processAudioStream(streamPath) {
   });
 }
 
-module.exports = {
-  processAudioStream,
-};
+nms.on("prePublish", (id, StreamPath, args) => {
+  console.log(`Stream [${id}] is about to be published at path: ${StreamPath}`);
+  processAudioStream(StreamPath);
+});
+
+module.exports = processAudioStream;

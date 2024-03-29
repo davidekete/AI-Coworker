@@ -1,5 +1,4 @@
 const NodeMediaServer = require("node-media-server");
-const { processAudioStream } = require("./audioProcessor");
 
 const config = {
   rtmp: {
@@ -16,10 +15,5 @@ const config = {
 };
 
 const nms = new NodeMediaServer(config);
-
-nms.on("prePublish", (id, StreamPath, args) => {
-  console.log(`Stream [${id}] is about to be published at path: ${StreamPath}`);
-  processAudioStream(StreamPath);
-});
 
 module.exports = nms;

@@ -29,7 +29,7 @@ async function textToSpeech(text) {
         }
       );
 
-      response.data.pipe(writeStream);
+      response.pipe(writeStream);
 
       // console.log(response.data);
     })

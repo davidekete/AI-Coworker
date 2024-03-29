@@ -1,7 +1,8 @@
 require("dotenv").config();
-const nms = require("./src/rtmpServer");
+const nms = require("./src/mediaServer");
 const transcriber = require("./src/transcriber");
 require("./src/promptProcessor");
+require("./src/audioProcessor");
 
 transcriber.connect().then(() => {
   console.log("Connected to real-time transcript service");

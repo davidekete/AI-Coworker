@@ -8,6 +8,7 @@
     "openai": "^4.28.4"
   },
   "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.24",
     "env-mirror": "^1.0.2"
   },
   "name": "ai-coworker",

@@ -16,22 +16,17 @@ async function textToSpeech(text) {
     data: {
       text,
     },
+    responseType: "arraybuffer",
   };
 
   axios
     .request(options)
     .then(function (response) {
       //save audio response to file
-      const writeStream = fs.createWriteStream(
-        `./src/responses/response-${Date.now()}.txt`,
-        {
-          flags: "a",
-        }
+      fs.writeFileSync(
+        `./src/responses/response-${Date.now()}.mp3`,
+        response.data
       );
-
-      response.pipe(writeStream);
-
-      // console.log(response.data);
     })
     .catch(function (error) {
       console.error(error);

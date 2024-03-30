@@ -25,15 +25,10 @@ function processAudioStream(streamPath) {
     })
     .pipe(audioStream, { end: true }); // Pipe the processed audio to audioStream
 
-  // Use the audioStream for further processing or transmission
+  // send audio stream to AssemblyAI
   audioStream.on("data", async (chunk) => {
     transcriber.sendAudio(chunk);
   });
 }
-
-nms.on("prePublish", (id, StreamPath, args) => {
-  console.log(`Stream [${id}] is about to be published at path: ${StreamPath}`);
-  processAudioStream(StreamPath);
-});
 
 module.exports = processAudioStream;

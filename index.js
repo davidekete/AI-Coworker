@@ -3,6 +3,7 @@ const nms = require("./src/mediaServer");
 const transcriber = require("./src/transcriber");
 require("./src/promptProcessor");
 require("./src/audioProcessor");
+require("./src/openai");
 
 transcriber.connect().then(() => {
   console.log("Connected to real-time transcript service");

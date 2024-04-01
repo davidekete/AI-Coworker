@@ -34,17 +34,6 @@ phraseEventEmitter.on("prompt_ended", async (fileName) => {
   }
 });
 
-// function stopWriteStream() {
-//   try {
-//     if (writeStream) {
-//       writeStream.end();
-//       writeStream = null;
-//       console.log("Write stream stopped.");
-//     }
-//   } catch (error) {
-//     console.error("An error occurred:", error);
-//   }
-// }
 
 transcriber.on("transcript", (transcript) => {
   if (!transcript.text) {
@@ -52,16 +41,8 @@ transcriber.on("transcript", (transcript) => {
   }
 
   if (!(transcript.message_type === "PartialTranscript")) {
-    // handleIncomingData(transcript.text);
-
-    if (writeStream) {
-      // Write data to the file
-      writeStream.write(transcript.text + "\n");
-
-      writeStream.on("error", (error) => {
-        console.error("An error occurred:", error);
-      });
-    }
+    //Write the transcript to the file if writeStream is active
+    handleIncomingData(transcript.text);
 
     // Check if the start phrase is detected
     if (transcript.text.includes(START_PHRASE)) {
@@ -71,19 +52,20 @@ transcriber.on("transcript", (transcript) => {
 
     // Check if the end phrase is detected
     if (transcript.text.includes(END_PHRASE)) {
+      //emit an event to stop the write stream with the file path
       phraseEventEmitter.emit("prompt_ended", writeStream.path);
       console.log("Stop phrase detected");
     }
   }
 });
 
-// function handleIncomingData(data) {
-//   if (writeStream) {
-//     // Write data to the file
-//     writeStream.write(data + "\n");
+function handleIncomingData(data) {
+  if (writeStream) {
+    // Write data to the file
+    writeStream.write(data + "\n");
 
-//     writeStream.on("error", (error) => {
-//       console.error("An error occurred:", error);
-//     });
-//   }
-// }
+    writeStream.on("error", (error) => {
+      console.error("An error occurred:", error);
+    });
+  }
+}

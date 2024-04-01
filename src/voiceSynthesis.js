@@ -1,11 +1,11 @@
 const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
 
 async function textToSpeech(text) {
   const voiceId = "21m00Tcm4TlvDq8ikWAM";
   const apiUrl = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
 
+  //axios request options
   const options = {
     method: "POST",
     url: apiUrl,
@@ -19,6 +19,7 @@ async function textToSpeech(text) {
     responseType: "arraybuffer",
   };
 
+  //send request
   axios
     .request(options)
     .then(function (response) {

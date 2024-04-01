@@ -23,24 +23,28 @@ phraseEventEmitter.on("prompt_started", () => {
 
 phraseEventEmitter.on("prompt_ended", async (fileName) => {
   try {
-    stopWriteStream();
+    if (writeStream) {
+      writeStream.end();
+      writeStream = null;
+      console.log("Write stream stopped.");
+    }
     return await getResponseFromOpenAI(fileName);
   } catch (error) {
     console.error("An error occurred:", error);
   }
 });
 
-function stopWriteStream() {
-  try {
-    if (writeStream) {
-      writeStream.end();
-      writeStream = null;
-      console.log("Write stream stopped.");
-    }
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
-}
+// function stopWriteStream() {
+//   try {
+//     if (writeStream) {
+//       writeStream.end();
+//       writeStream = null;
+//       console.log("Write stream stopped.");
+//     }
+//   } catch (error) {
+//     console.error("An error occurred:", error);
+//   }
+// }
 
 transcriber.on("transcript", (transcript) => {
   if (!transcript.text) {
@@ -48,13 +52,24 @@ transcriber.on("transcript", (transcript) => {
   }
 
   if (!(transcript.message_type === "PartialTranscript")) {
-    handleIncomingData(transcript.text);
+    // handleIncomingData(transcript.text);
 
+    if (writeStream) {
+      // Write data to the file
+      writeStream.write(transcript.text + "\n");
+
+      writeStream.on("error", (error) => {
+        console.error("An error occurred:", error);
+      });
+    }
+
+    // Check if the start phrase is detected
     if (transcript.text.includes(START_PHRASE)) {
       phraseEventEmitter.emit("prompt_started");
       console.log("Start phrase detected");
     }
 
+    // Check if the end phrase is detected
     if (transcript.text.includes(END_PHRASE)) {
       phraseEventEmitter.emit("prompt_ended", writeStream.path);
       console.log("Stop phrase detected");
@@ -62,13 +77,13 @@ transcriber.on("transcript", (transcript) => {
   }
 });
 
-function handleIncomingData(data) {
-  if (writeStream) {
-    // Write data to the file
-    writeStream.write(data + "\n");
+// function handleIncomingData(data) {
+//   if (writeStream) {
+//     // Write data to the file
+//     writeStream.write(data + "\n");
 
-    writeStream.on("error", (error) => {
-      console.error("An error occurred:", error);
-    });
-  }
-}
+//     writeStream.on("error", (error) => {
+//       console.error("An error occurred:", error);
+//     });
+//   }
+// }

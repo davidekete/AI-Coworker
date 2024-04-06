@@ -2,8 +2,10 @@
   "dependencies": {
     "assemblyai": "^4.3.2",
     "axios": "^1.6.8",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "fluent-ffmpeg": "^2.1.2",
+    "http-server": "^14.1.1",
     "node-media-server": "^2.6.2",
     "openai": "^4.28.4",
     "puppeteer": "^22.6.1"

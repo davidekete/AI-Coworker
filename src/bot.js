@@ -7,7 +7,13 @@ async function joinZoomMeeting(meetId, meetingPassCode) {
     const meetingName = "AI coworker";
 
     // Launch the browser
-    browser = await puppeteer.launch({ headless: false });
+    browser = await puppeteer.launch({
+      headless: false,
+      args: [
+        // "--use-fake-ui-for-media-stream",
+        // "--use-fake-device-for-media-stream",
+      ],
+    });
 
     // Get the first page
     const [page] = await browser.pages();
@@ -41,24 +47,62 @@ async function joinZoomMeeting(meetId, meetingPassCode) {
     await frame.type("#input-for-name", meetingName);
 
     await frame.$$eval("button", (els) =>
+      // @ts-ignore
       els.find((el) => el.textContent.trim() === "Join").click()
     );
+
+    // Wait for the button to load
+    const buttonSelector = "[tabindex='0'].join-audio-by-voip__join-btn";
+
+    await frame.waitForSelector(buttonSelector, {
+      //increase wait time
+      timeout: 1000000,
+    });
+
+    // Click the button
+    await frame.click(buttonSelector);
+
+    //allow access to microphone
+    const unmuteButtonSelector = 'button[aria-label="unmute my microphone"]';
+
+    await frame.waitForSelector(unmuteButtonSelector);
+
+    await frame.click(unmuteButtonSelector);
+
+    console.log("Unmuted");
+
+    console.log("Playing audio");
+
+    await frame.evaluate(() => {
+      console.log("In the frame");
+      var audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+      console.log("AudioContext", audioContext);
+
+      fetch("http://localhost:9090/responses/response-1711829121531.mp3")
+        .then((response) => response.arrayBuffer())
+        .then((arrayBuffer) => {
+          console.log(arrayBuffer);
+
+          audioContext.decodeAudioData(arrayBuffer, function (audioBuffer) {
+            var source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+          });
+          
+        })
+        .catch((e) => console.error(e));
+    });
+
+    console.log("Audio played");
+    frame.on("console", (msg) => console.log("Frame console:", msg.text()));
   } catch (error) {
     console.error("An error occurred:", error);
   }
 }
 
-// Meeting ID:  83430234603
-// Passcode: 496722
+joinZoomMeeting("81337598763", "718601");
 
-joinZoomMeeting("83430234603", "496722");
-{
-  /* <button
-  tabindex="0"
-  type="button"
-  class="zm-btn join-audio-by-voip__join-btn zm-btn--primary zm-btn__outline--white zm-btn--lg"
-  aria-label=""
->
-  Join Audio by Computer<span class="loading" style="display: none;"></span>
-</button>; */
-}
+// https://us02web.zoom.us/j/83578367332?pwd=dy9yREpVQk9hNHEyYi9Ba2hDVnBYZz09

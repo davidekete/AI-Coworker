@@ -47,7 +47,6 @@ async function joinZoomMeeting(meetId, meetingPassCode) {
     await frame.type("#input-for-name", meetingName);
 
     await frame.$$eval("button", (els) =>
-      // @ts-ignore
       els.find((el) => el.textContent.trim() === "Join").click()
     );
 
@@ -91,7 +90,6 @@ async function joinZoomMeeting(meetId, meetingPassCode) {
             source.connect(audioContext.destination);
             source.start(0);
           });
-          
         })
         .catch((e) => console.error(e));
     });
